@@ -18,6 +18,10 @@ public class MainActivity extends AppCompatActivity
 {
     RecyclerView recyclerView;
     NumberAdapter adapter;
+    private RecyclerView recyclerView1, recyclerView2;
+    private Adapter1 adapter1;
+    private Adapter2 adapter2;
+
 
     @Override
     protected void onCreate( Bundle savedInstanceState )
@@ -31,54 +35,84 @@ public class MainActivity extends AppCompatActivity
         adapter = new NumberAdapter( this );
         recyclerView.setAdapter( adapter );
 
-        // Initialize Grid Layout
-        GridLayout gridLayout = findViewById( R.id.gridLayout );
-
-        for ( int i = 0; i < 100; i++ )
+        recyclerView1 = findViewById( R.id.recycler_view1 );
+        recyclerView2 = findViewById( R.id.recycler_view2 );
+        adapter1 = new Adapter1( new OnItemClickListener()
         {
-            Button button = new Button( this );
-            button.setText( String.valueOf( i + 1 ) );
-
-            // 设置按钮的大小
-            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-            params.width = 180;  // 宽度为60像素
-            params.height = 80; // 高度为60像素
-            button.setLayoutParams(params);
-
-            // 设置背景选择器
-            button.setBackgroundResource(R.drawable.selector_item_background);
-
-            final int position = i;
-            button.setOnClickListener( new View.OnClickListener()
+            @Override
+            public void onItemClick( int start, int end )
             {
-                @Override
-                public void onClick( View v )
-                {
-                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                adapter2.updateData( start, end );
+            }
+        } );
+        adapter2 = new Adapter2( new OnItemClickListener()
+        {
+            @Override
+            public void onItemClick( int start, int end )
+            {
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
 //                    // Scroll to the position when the button is clicked
 //                    recyclerView.scrollToPosition( position );
 
-                    // 滚动到指定位置，并设置偏移量为 0
-                    if (layoutManager != null) {
-                        layoutManager.scrollToPositionWithOffset(position, 0);}
-
-                    // 延迟以等待滚动完成，然后设置焦点
-                    recyclerView.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(position);
-                            if (viewHolder != null) {
-                                viewHolder.itemView.requestFocus();
-                            }
-                        }
-                    }, 100);  // 设置合适的延迟时间，这里用了100毫秒
-
+                // 滚动到指定位置，并设置偏移量为 0
+                if ( layoutManager != null )
+                {
+                    layoutManager.scrollToPositionWithOffset( start, 0 );
                 }
-            } );
-            gridLayout.addView( button );
-        }
+
+                // 延迟以等待滚动完成，然后设置焦点
+                recyclerView.postDelayed( new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition( start );
+                        if ( viewHolder != null )
+                        {
+                            viewHolder.itemView.requestFocus();
+                        }
+                    }
+                }, 100 );  // 设置合适的延迟时间，这里用了100毫秒
+            }
+        } );
+
+        recyclerView1.setLayoutManager( new LinearLayoutManager( this, LinearLayoutManager.HORIZONTAL, false ) );
+        recyclerView1.setAdapter( adapter1 );
+
+        recyclerView2.setLayoutManager( new LinearLayoutManager( this, LinearLayoutManager.HORIZONTAL, false ) );
+        recyclerView2.setAdapter( adapter2 );
+
+//            button.setOnClickListener( new View.OnClickListener()
+//            {
+//                @Override
+//                public void onClick( View v )
+//                {
+//                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+//
+////                    // Scroll to the position when the button is clicked
+////                    recyclerView.scrollToPosition( position );
+//
+//                    // 滚动到指定位置，并设置偏移量为 0
+//                    if (layoutManager != null) {
+//                        layoutManager.scrollToPositionWithOffset(position, 0);}
+//
+//                    // 延迟以等待滚动完成，然后设置焦点
+//                    recyclerView.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(position);
+//                            if (viewHolder != null) {
+//                                viewHolder.itemView.requestFocus();
+//                            }
+//                        }
+//                    }, 100);  // 设置合适的延迟时间，这里用了100毫秒
+//
+//                }
+//            } );
+//        }
     }
+
     public class NumberAdapter extends RecyclerView.Adapter<NumberAdapter.ViewHolder>
     {
         private Context mContext;
